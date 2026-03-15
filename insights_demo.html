@@ -3,201 +3,306 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Insights for AI in Education — Prototype</title>
+  <title>Insights for AI in Education</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #fafbfc;
-      --card: #ffffff;
-      --border: #e1e4e8;
-      --text: #24292f;
-      --muted: #57606a;
-      --accent: #0969da;
-      --topic0: #8250df;
-      --topic1: #1a7f37;
-      --topic2: #cf222e;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --t0: #7c3aed;
+      --t1: #059669;
+      --t2: #dc2626;
     }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 0 24px 48px;
-    }
-    .container { max-width: 900px; margin: 0 auto; }
-    header {
-      padding: 32px 0 24px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 32px;
-    }
-    header h1 {
-      font-family: 'Source Serif 4', serif;
-      font-size: 1.75rem;
-      font-weight: 700;
-      margin: 0 0 8px 0;
-      color: var(--text);
-    }
-    header .tagline {
-      font-size: 0.95rem;
-      color: var(--muted);
-      margin: 0;
-    }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-      margin-bottom: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .card h2 {
-      font-family: 'Source Serif 4', serif;
-      font-size: 1.15rem;
-      font-weight: 600;
-      margin: 0 0 12px 0;
-      color: var(--text);
-    }
-    .card p, .card li { margin: 0 0 8px 0; color: var(--text); }
-    .card ul { margin: 0; padding-left: 20px; }
-    .card li { margin-bottom: 6px; }
-    .section-label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
-    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
-    th {
-      background: var(--bg);
-      font-weight: 600;
-      color: var(--muted);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+    body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px; }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 0 20px 40px; }
+
+    .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+    .header h1 { margin: 0; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+    .header-nav { display: flex; gap: 16px; font-size: 0.875rem; }
+    .header-nav a { color: var(--muted); text-decoration: none; }
+    .header-nav a:hover { color: var(--accent); }
+
+    .flow-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; }
+    .flow-bar .flow-line { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-bottom: 12px; }
+    .flow-bar .flow-line:last-child { margin-bottom: 0; }
+    .flow-step { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: var(--bg); border-radius: 6px; font-size: 0.875rem; }
+    .flow-step .n { width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: white; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.7rem; }
+    .flow-arr { color: var(--border); font-size: 1rem; }
+
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; }
+    .panel h2 { margin: 0 0 12px 0; font-size: 1rem; font-weight: 600; color: var(--text); }
+    .panel p { margin: 0 0 12px 0; color: var(--text); font-size: 0.9375rem; }
+    .panel p:last-child { margin-bottom: 0; }
+    .panel-muted { background: #f1f5f9; border-color: #e2e8f0; }
+
+    .check-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+    .check-row input { flex: 1; min-width: 180px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9375rem; }
+    .btn { padding: 10px 18px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 500; font-size: 0.9375rem; cursor: pointer; }
+    .btn:hover { background: var(--accent-hover); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .try-link { font-size: 0.8125rem; color: var(--muted); }
+    .try-link a { color: var(--accent); text-decoration: none; }
+    .try-link a:hover { text-decoration: underline; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { font-weight: 600; color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; background: var(--bg); }
     tr:last-child td { border-bottom: none; }
-    .num { width: 48px; text-align: right; }
+    .num { width: 40px; text-align: right; }
     .score { font-weight: 600; color: var(--accent); }
-    .topic-tag {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-    .topic-0 { background: #fbefff; color: var(--topic0); }
-    .topic-1 { background: #dafbe1; color: var(--topic1); }
-    .topic-2 { background: #ffebe9; color: var(--topic2); }
-    .loading { color: var(--muted); padding: 24px; text-align: center; }
-    .error { color: #cf222e; padding: 24px; background: #ffebe9; border-radius: 12px; margin-bottom: 24px; }
-    .source-note { font-size: 0.8rem; color: var(--muted); margin-top: 16px; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
+    .tag-0 { background: #ede9fe; color: var(--t0); }
+    .tag-1 { background: #d1fae5; color: var(--t1); }
+    .tag-2 { background: #fee2e2; color: var(--t2); }
+    .paper-link { color: var(--accent); text-decoration: none; }
+    .paper-link:hover { text-decoration: underline; }
+    .authors { font-size: 0.8125rem; color: var(--muted); max-width: 200px; }
+
+    .hyp-list { margin: 0; padding-left: 20px; }
+    .hyp-list li { margin-bottom: 10px; }
+    .hyp-ev { font-size: 0.8125rem; color: var(--muted); margin-top: 4px; font-style: italic; }
+    .paper-examples { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 0.875rem; }
+    .paper-examples h3 { font-size: 0.875rem; font-weight: 600; margin: 0 0 8px 0; color: var(--accent); }
+    .paper-examples .ex { margin-bottom: 10px; }
+    .paper-examples .ex p { margin: 2px 0 0 0; }
+
+    .loading { color: var(--muted); padding: 32px; text-align: center; font-size: 1rem; }
+    .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-inline { padding: 16px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+    .loading-inline .loading-spinner { width: 16px; height: 16px; margin-right: 6px; }
+    .err { color: #b91c1c; padding: 16px; background: #fef2f2; border-radius: 8px; margin-bottom: 20px; font-size: 0.875rem; }
+    .source { font-size: 0.75rem; color: var(--muted); margin-top: 12px; }
+    .check-result-table { font-size: 0.8125rem; margin-top: 14px; }
+    .check-result-table .ok { color: var(--t1); font-weight: 500; }
+    .check-result-table .nope { color: var(--muted); }
+    .methodology { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 14px 20px; margin-bottom: 22px; font-size: 0.9375rem; }
+    .methodology p { margin: 0 0 6px 0; color: var(--text); }
+    .methodology p:last-child { margin-bottom: 0; }
+    .methodology a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    .methodology a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
+  <div class="wrap">
+    <header class="header">
       <h1>Insights for AI in Education</h1>
-      <p class="tagline">Early-stage prototype: from research evidence to synthesis and testable hypotheses for grantmaking and partnerships.</p>
+      <nav class="header-nav">
+        <a href="/hub">Hub</a>
+        <a href="http://localhost:8501" target="_blank" rel="noopener">Deep Research</a>
+        <a href="/docs">API</a>
+        <a href="#" id="clear-cache-link" style="font-size:0.8rem;">Clear cache</a>
+      </nav>
     </header>
 
-    <div id="loading" class="loading">Loading evidence and insights…</div>
-    <div id="error" class="error" style="display:none;"></div>
-
-    <div id="content" style="display:none;">
-      <div class="section-label">Synthesis</div>
-      <div class="card">
-        <h2>Research synthesis</h2>
-        <p id="synthesis"></p>
+    <div id="content">
+      <div class="methodology">
+        <p><strong>Methodology.</strong> This stack combines citation-based insights with deep literature research. Two agents are deeply integrated: we <strong>query paper topics from the Deep Research agent</strong> (by session ID), then <strong>feed those papers into the model</strong>—each paper is looked up in Semantic Scholar for citation-based impact. No paper IDs; use title and topic from Deep Research. The pipeline produces synthesis, testable hypotheses, and ranked evidence. <a href="/hub">Full methodology &amp; mechanism →</a></p>
+      </div>
+      <!-- Search by topic (e.g. tutoring) + Deep Research session -->
+      <div class="panel" style="border-color: var(--accent); border-width: 2px;">
+        <h2>Search papers &amp; predictions</h2>
+        <p style="margin-bottom:10px; font-size:0.9375rem; color:var(--muted);">Search by topic or keyword (e.g. <strong>tutoring</strong>, intelligent tutoring systems). Papers from Semantic Scholar, 2024 onward, ranked by citation impact.</p>
+        <div class="check-row">
+          <input type="text" id="search-query-input" placeholder="e.g. tutoring, intelligent tutoring systems" />
+          <button type="button" id="search-papers-btn" class="btn">Search papers</button>
+        </div>
+        <p style="margin:12px 0 8px 0; font-size:0.875rem; color:var(--muted);">Or use a Deep Research session ID to fetch papers from the agent:</p>
+        <div class="check-row">
+          <input type="text" id="dr-session-id" placeholder="Deep Research session ID (from Run Research)" />
+          <button type="button" id="dr-fetch-predict-btn" class="btn">Fetch papers &amp; predict</button>
+        </div>
+        <p class="try-link"><a href="#" id="dr-list-sessions">List sessions</a> (requires DEEP_RESEARCH_API_URL)</p>
+        <div id="dr-sessions-list" style="display:none; margin-top:8px; font-size:0.875rem;"></div>
+        <div id="dr-predict-result" style="margin-top:16px;"></div>
       </div>
 
-      <div class="section-label">Testable hypotheses</div>
-      <div class="card">
+      <!-- Legacy: check by CCM paper IDs (optional) -->
+      <div class="panel panel-muted">
+        <h2>Check by paper IDs (CCM demo)</h2>
+        <div class="check-row">
+          <input type="text" id="check-papers-input" placeholder="Paper IDs (e.g. 1, 5, 12)" />
+          <button type="button" id="check-papers-btn" class="btn">Check</button>
+        </div>
+        <p class="try-link"><a href="#" id="try-top-papers" data-ids="{{TOP_PAPER_IDS}}">Use top 3 from table below</a></p>
+        <div id="check-papers-result"></div>
+      </div>
+
+      <!-- Synthesis (server-rendered) -->
+      <div class="panel">
+        <h2>Synthesis</h2>
+        <p id="synthesis">{{SYNTHESIS}}</p>
+      </div>
+
+      <!-- Evidence basis (server-rendered) -->
+      <div class="panel panel-muted">
+        <h2>Evidence basis</h2>
+        <p id="evidence-basis">{{EVIDENCE_BASIS}}</p>
+        {{TOPIC_SUMMARY}}
+      </div>
+
+      <!-- Hypotheses (server-rendered) -->
+      <div class="panel">
         <h2>Testable hypotheses</h2>
-        <ol id="hypotheses"></ol>
+        <ol id="hypotheses" class="hyp-list">{{HYPOTHESES_HTML}}</ol>
       </div>
 
-      <div class="section-label">Evidence base (ranked by predicted impact)</div>
-      <div class="card">
+      <!-- Ranked evidence (server-rendered) -->
+      <div class="panel">
         <h2>Ranked evidence</h2>
-        <p style="margin-bottom: 16px;">Papers ranked by citation impact (predicted or current), with education topic. Use this list to prioritize follow-up, replication, or partnership.</p>
+        <p style="margin-bottom:8px; font-size:0.875rem; color:var(--muted);">Predictions from the <strong>Community Citation Model (CCM)</strong>: the citation network (who cites whom) is the central object; papers are ranked by predicted or current impact. Titles and authors from Semantic Scholar (AI in education, <strong>2024 onward</strong>); order and impact score from the CCM.</p>
+        <p style="margin-bottom:12px; font-size:0.8125rem; color:var(--muted);">Topic(s) = paper-specific fields from Semantic Scholar when available; otherwise CCM broad topic. Rank in topic = position within that topic (community) by the same score.</p>
         <table>
           <thead>
-            <tr>
-              <th class="num">#</th>
-              <th>Paper</th>
-              <th>Year</th>
-              <th>Topic (education)</th>
-              <th class="num">Impact</th>
-            </tr>
+            <tr><th class="num">#</th><th>Paper</th><th>Authors</th><th>Year</th><th>Topic(s)</th><th class="num">Rank in topic</th><th class="num">Impact</th></tr>
           </thead>
-          <tbody id="predictions"></tbody>
+          <tbody id="predictions">{{PREDICTIONS_HTML}}</tbody>
         </table>
-        <p id="source-note" class="source-note"></p>
-      </div>
-
-      <div class="section-label">Also in this stack</div>
-      <div class="card">
-        <h2>AI Education Research Assistant</h2>
-        <p>Run deep literature reviews on AI in education with the <a href="https://github.com/alym00sa-dev/ai-in-education-research-agent" target="_blank" rel="noopener">AI-in-Education Research Agent</a>: Open Deep Research (LangGraph) + Neo4j knowledge graph + evidence mapping. Use it for comprehensive queries and problem-burden analysis.</p>
-        <p style="margin-bottom:0;"><strong>To run:</strong> Clone the repo, start LangGraph and Neo4j, then <code>streamlit run app.py</code> → <a href="http://localhost:8501" target="_blank" rel="noopener">http://localhost:8501</a>. For a single entry point to both tools, open <a href="/hub">/hub</a> on this server.</p>
+        <p id="source-note" class="source">{{SOURCE_NOTE}}</p>
       </div>
     </div>
   </div>
 
   <script>
-    (async function() {
-      const loading = document.getElementById('loading');
-      const error = document.getElementById('error');
-      const content = document.getElementById('content');
-      try {
-        const res = await fetch('/api/insights');
-        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-        const data = await res.json();
-        loading.style.display = 'none';
-        content.style.display = 'block';
-
-        document.getElementById('synthesis').textContent = data.synthesis || '—';
-
-        const hypEl = document.getElementById('hypotheses');
-        hypEl.innerHTML = '';
-        (data.hypotheses || []).forEach(function(h) {
-          const li = document.createElement('li');
-          li.textContent = h;
-          hypEl.appendChild(li);
-        });
-
-        const tbody = document.getElementById('predictions');
-        (data.predictions || []).forEach(function(p) {
-          const tr = document.createElement('tr');
-          const topicClass = p.topic && p.topic.includes('Policy') ? 'topic-0' : p.topic && p.topic.includes('Learning') ? 'topic-1' : 'topic-2';
-          tr.innerHTML =
-            '<td class="num">' + (p.rank || '') + '</td>' +
-            '<td>' + (p.title || 'Paper ' + p.paper_id) + '</td>' +
-            '<td>' + (p.year || '') + '</td>' +
-            '<td><span class="topic-tag ' + topicClass + '">' + (p.topic || '—') + '</span></td>' +
-            '<td class="num score">' + (p.score ?? '') + '</td>';
-          tbody.appendChild(tr);
-        });
-
-        if (data.source) {
-          document.getElementById('source-note').textContent = 'Source: ' + data.source;
+    (function() {
+      var clearLink = document.getElementById('clear-cache-link');
+      if (clearLink) clearLink.onclick = function(e) { e.preventDefault(); fetch(location.origin + '/api/clear-cache', { method: 'POST' }).then(function() { location.href = location.pathname + '?nocache=' + Date.now(); }).catch(function() { location.reload(); }); };
+      var tryTop = document.getElementById('try-top-papers');
+      var checkInput = document.getElementById('check-papers-input');
+      if (tryTop && checkInput) tryTop.onclick = function(e) { e.preventDefault(); var ids = (tryTop.getAttribute('data-ids') || '').trim(); if (ids) checkInput.value = ids; };
+      var searchInput = document.getElementById('search-query-input');
+        var searchBtn = document.getElementById('search-papers-btn');
+        var drResult = document.getElementById('dr-predict-result');
+        if (searchBtn && searchInput && drResult) {
+          searchBtn.onclick = async function() {
+            var q = (searchInput.value || '').trim();
+            if (!q) { drResult.innerHTML = '<p class="err" style="margin:0;">Enter a topic (e.g. tutoring).</p>'; return; }
+            searchBtn.disabled = true;
+            drResult.innerHTML = '<div class="loading-inline"><span class="loading-spinner"></span>Loading… (searching Semantic Scholar)</div>';
+            try {
+              var r = await fetch(location.origin + '/api/search-papers?query=' + encodeURIComponent(q) + '&limit=20');
+              var d = await r.json();
+              if (!r.ok) throw new Error(d.detail || d.message || r.statusText);
+              var preds = d.predictions || [];
+              var html = '<p style="font-size:0.9rem; margin-bottom:10px;">Topic: “‘ + (d.query || q) + '” · ' + (d.count || 0) + ' papers</p>';
+              if (preds.length) {
+                html += '<table class="check-result-table"><thead><tr><th>#</th><th>Paper</th><th>Authors</th><th>Year</th><th>Topic</th><th class="num">Impact</th></tr></thead><tbody>';
+                preds.forEach(function(p, i) {
+                  var title = (p.title || '—');
+                  var link = p.url ? ('<a href="' + p.url + '" target="_blank" rel="noopener" class="paper-link">' + title + '</a>') : title;
+                  html += '<tr><td>' + (i + 1) + '</td><td>' + link + '</td><td class="authors">' + (p.authors || '—') + '</td><td>' + (p.year != null ? p.year : '—') + '</td><td>' + (p.topic || '—') + '</td><td class="num">' + (p.impact_score != null ? p.impact_score : '—') + '</td></tr>';
+                });
+                html += '</tbody></table>';
+              } else {
+                html += '<p class="err" style="margin:0;">No papers found. Try a different query (e.g. intelligent tutoring systems, AI education).</p>';
+              }
+              drResult.innerHTML = html;
+            } catch (err) {
+              drResult.innerHTML = '<p class="err" style="margin:0;">' + (err.message || 'Search failed') + '</p>';
+            }
+            searchBtn.disabled = false;
+          };
         }
-      } catch (e) {
-        loading.style.display = 'none';
-        error.style.display = 'block';
-        error.textContent = 'Could not load insights. Start the API: python -m uvicorn api.main:app --port 8000 (from the community_citation_model folder).';
-      }
+
+        // Deep Research: fetch papers by session and predict (no paper IDs)
+        var drSessionInput = document.getElementById('dr-session-id');
+        var drFetchBtn = document.getElementById('dr-fetch-predict-btn');
+        var drListLink = document.getElementById('dr-list-sessions');
+        var drSessionsList = document.getElementById('dr-sessions-list');
+        if (drListLink) {
+          drListLink.onclick = async function(e) {
+            e.preventDefault();
+            drSessionsList.style.display = 'block';
+            drSessionsList.innerHTML = '<span class="loading-spinner" style="width:14px;height:14px;margin-right:6px;"></span>Loading sessions…';
+            try {
+              var r = await fetch(location.origin + '/api/deep-research/sessions');
+              var d = await r.json();
+              if (d.sessions && d.sessions.length) {
+                var html = 'Sessions: ';
+                d.sessions.forEach(function(s) {
+                  var id = (s.session_id || s.id || '').substring(0, 8);
+                  html += '<button type="button" class="dr-session-pick" data-id="' + (s.session_id || s.id || '') + '" style="margin-right:8px; padding:4px 8px; font-size:0.8rem;">' + id + '</button>';
+                });
+                drSessionsList.innerHTML = html;
+                drSessionsList.querySelectorAll('.dr-session-pick').forEach(function(btn) {
+                  btn.onclick = function() { drSessionInput.value = btn.getAttribute('data-id'); };
+                });
+              } else {
+                drSessionsList.innerHTML = d.message || 'No sessions or DEEP_RESEARCH_API_URL not set.';
+              }
+            } catch (err) {
+              drSessionsList.innerHTML = 'Error: ' + (err.message || 'Failed');
+            }
+          };
+        }
+        if (drFetchBtn && drSessionInput && drResult) {
+          drFetchBtn.onclick = async function() {
+            var sid = (drSessionInput.value || '').trim();
+            if (!sid) { drResult.innerHTML = '<p class="err" style="margin:0;">Enter a session ID.</p>'; return; }
+            drFetchBtn.disabled = true;
+            drResult.innerHTML = '<div class="loading-inline"><span class="loading-spinner"></span>Loading… (fetching from Deep Research API)</div>';
+            try {
+              var r = await fetch(location.origin + '/api/predict-from-deep-research', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: sid }) });
+              var d = await r.json();
+              if (!r.ok) throw new Error(d.detail || r.statusText);
+              if (d.message && !d.predictions) { drResult.innerHTML = '<p class="err" style="margin:0;">' + d.message + '</p>'; drFetchBtn.disabled = false; return; }
+              var preds = d.predictions || [];
+              var html = '<p style="font-size:0.9rem; margin-bottom:10px;">' + (d.source || '') + ' · ' + (d.count || 0) + ' papers</p>';
+              if (preds.length) {
+                html += '<table class="check-result-table"><thead><tr><th>#</th><th>Paper</th><th>Authors</th><th>Year</th><th>Topic</th><th class="num">Impact</th></tr></thead><tbody>';
+                preds.forEach(function(p, i) {
+                  var title = (p.title || '—');
+                  var link = p.url ? ('<a href="' + p.url + '" target="_blank" rel="noopener" class="paper-link">' + title + '</a>') : title;
+                  html += '<tr><td>' + (i + 1) + '</td><td>' + link + '</td><td class="authors">' + (p.authors || '—') + '</td><td>' + (p.year != null ? p.year : '—') + '</td><td>' + (p.topic || '—') + '</td><td class="num">' + (p.impact_score != null ? p.impact_score : '—') + '</td></tr>';
+                });
+                html += '</tbody></table>';
+              }
+              drResult.innerHTML = html;
+            } catch (err) {
+              drResult.innerHTML = '<p class="err" style="margin:0;">' + (err.message || 'Request failed') + '</p>';
+            }
+            drFetchBtn.disabled = false;
+          };
+        }
+
+        var checkBtn = document.getElementById('check-papers-btn');
+        var checkResult = document.getElementById('check-papers-result');
+        if (checkBtn && checkInput && checkResult) checkBtn.onclick = async function() {
+          var ids = (checkInput.value || '').trim().split(/[\s,]+/).map(function(s) { return parseInt(s, 10); }).filter(function(n) { return !isNaN(n); });
+          if (!ids.length) { checkResult.innerHTML = '<p class="err" style="margin:0;">Enter at least one paper ID.</p>'; return; }
+          checkBtn.disabled = true;
+          checkResult.innerHTML = '<div class="loading-inline"><span class="loading-spinner"></span>Loading… (checking papers)</div>';
+          try {
+            var r = await fetch(location.origin + '/api/check-papers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paper_ids: ids }) });
+            var out = await r.json();
+            if (!r.ok) throw new Error(out.detail || r.statusText);
+            var html = '';
+            if (out.papers && out.papers.length) {
+              html = '<table class="check-result-table"><thead><tr><th>Paper</th><th>In dataset</th><th>Rank</th><th>Impact</th><th>Topic</th></tr></thead><tbody>';
+              out.papers.forEach(function(p) {
+                var cls = p.in_dataset ? 'ok' : 'nope';
+                var status = p.in_dataset ? 'Yes' : 'No';
+                var rank = p.in_dataset ? (p.rank || '—') : '—';
+                var score = p.in_dataset ? (p.score ?? '—') : '—';
+                var topic = p.in_dataset ? (p.topic || '—') : (p.message || '—');
+                html += '<tr><td>' + p.paper_id + '</td><td class="' + cls + '">' + status + '</td><td>' + rank + '</td><td>' + score + '</td><td>' + topic + '</td></tr>';
+              });
+              html += '</tbody></table>';
+            }
+            checkResult.innerHTML = html;
+          } catch (err) {
+            checkResult.innerHTML = '<p class="err" style="margin:0;">' + (err.message || 'Could not check papers.') + '</p>';
+          }
+          checkBtn.disabled = false;
+        };
     })();
   </script>
 </body>

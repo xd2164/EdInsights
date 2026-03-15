@@ -22,6 +22,59 @@ Together they cover: **(1) quick evidence scan and ranking (CCM)** and **(2) in-
 
 ---
 
+## Connecting the two agents: Deep Research → CCM predictions (show the future)
+
+Papers that the **Deep Research** agent surfaces can be **checked against the Community Citation Model** so you see both what the literature says and how the citation model predicts those papers will perform in the future.
+
+**Flow:**
+
+1. **Deep Research** (Research Agent) runs on a query and returns a list of papers (with citations, evidence quality, etc.).
+2. Send those papers to the **CCM API**: `POST http://127.0.0.1:8000/api/check-papers` with body `{"paper_ids": [1, 2, 3, ...]}`. (In the demo, paper_ids are from the CCM dataset; in a full integration, the Research Agent would pass identifiers that the CCM can resolve.)
+3. The CCM returns for each paper: **rank**, **predicted impact (score)**, and **topic**. Papers in the CCM dataset get a rank and score; others get `in_dataset: false`.
+4. **Combined view:** Deep Research tells you what the literature says; CCM tells you the predicted future trajectory of those same papers in the citation network.
+
+So: **Deep Research surfaces the papers; CCM checks the citation predictions to show the future.**
+
+| Step | Where | What |
+|------|--------|------|
+| Run deep research | Research Agent (port 8501) | Get list of papers |
+| Check citations / future impact | CCM API `POST /api/check-papers` | Get rank, score, topic per paper |
+| Use both | Your workflow or dashboard | Literature + predicted impact |
+
+See also `GET /api/how-it-works` on the CCM API for the `deep_research_cross_check` section.
+
+---
+
+## Deep integration: query paper topics from Deep Research and feed into the model (no paper IDs)
+
+The CCM can **query papers and their topics directly from the Deep Research agent** and run them through the prediction pipeline—**no paper IDs**; everything is by title and topic.
+
+**Setup:** Point the CCM API at the Research Agent API using the environment variable **`DEEP_RESEARCH_API_URL`** (e.g. the base URL of the Research Agent’s FastAPI, such as `http://localhost:8001` if that’s where you run the eduviz API).
+
+**Flow:**
+
+1. Run **Deep Research** (Research Agent) so it creates a session and stores papers in Neo4j.
+2. On the **Insights** page, in **“Predictions from Deep Research”**, enter the **session ID** (or use **“List sessions”** to pick one).
+3. Click **“Fetch papers & predict”**. The CCM calls the Deep Research API (`GET /api/v1/sessions/{session_id}/papers`), gets papers with **title and topic** (objective/outcome from the agent), then looks up each paper in **Semantic Scholar** for citation-based impact.
+4. The result is a table of **title, authors, year, topic (from Deep Research), impact score**—no paper IDs.
+
+**API endpoints (CCM):**
+
+| Endpoint | Purpose |
+|----------|--------|
+| `GET /api/deep-research/sessions` | List sessions from the Deep Research agent (requires `DEEP_RESEARCH_API_URL`). |
+| `POST /api/predict-from-deep-research` | Body: `{"session_id": "..."}` or `{"papers": [{"title": "...", "year": null, "topic": "..."}]}`. Fetches papers from Deep Research (if `session_id`) or uses the provided list; looks up each in Semantic Scholar; returns predictions (title, authors, year, topic, impact_score, url). |
+| `POST /api/check-papers` | Body can be `{"papers": [{"title": "...", "topic": "..."}]}` to check by title/topic (Semantic Scholar lookup); or legacy `{"paper_ids": [1,2,3]}` for CCM demo. |
+
+**Run CCM with Deep Research URL:**
+
+```bash
+export DEEP_RESEARCH_API_URL=http://localhost:8001   # or the URL of the Research Agent API
+python -m uvicorn api.main:app --port 8000
+```
+
+---
+
 ## How to run both (merged workflow)
 
 ### 1. CCM Insights (this repo)
