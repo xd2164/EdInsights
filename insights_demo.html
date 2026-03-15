@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insights for AI in Education — Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafbfc;
+      --card: #ffffff;
+      --border: #e1e4e8;
+      --text: #24292f;
+      --muted: #57606a;
+      --accent: #0969da;
+      --topic0: #8250df;
+      --topic1: #1a7f37;
+      --topic2: #cf222e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 0 24px 48px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    header {
+      padding: 32px 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    header h1 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      color: var(--text);
+    }
+    header .tagline {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin: 0;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card h2 {
+      font-family: 'Source Serif 4', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      color: var(--text);
+    }
+    .card p, .card li { margin: 0 0 8px 0; color: var(--text); }
+    .card ul { margin: 0; padding-left: 20px; }
+    .card li { margin-bottom: 6px; }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    th {
+      background: var(--bg);
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    tr:last-child td { border-bottom: none; }
+    .num { width: 48px; text-align: right; }
+    .score { font-weight: 600; color: var(--accent); }
+    .topic-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .topic-0 { background: #fbefff; color: var(--topic0); }
+    .topic-1 { background: #dafbe1; color: var(--topic1); }
+    .topic-2 { background: #ffebe9; color: var(--topic2); }
+    .loading { color: var(--muted); padding: 24px; text-align: center; }
+    .error { color: #cf222e; padding: 24px; background: #ffebe9; border-radius: 12px; margin-bottom: 24px; }
+    .source-note { font-size: 0.8rem; color: var(--muted); margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Insights for AI in Education</h1>
+      <p class="tagline">Early-stage prototype: from research evidence to synthesis and testable hypotheses for grantmaking and partnerships.</p>
+    </header>
+
+    <div id="loading" class="loading">Loading evidence and insights…</div>
+    <div id="error" class="error" style="display:none;"></div>
+
+    <div id="content" style="display:none;">
+      <div class="section-label">Synthesis</div>
+      <div class="card">
+        <h2>Research synthesis</h2>
+        <p id="synthesis"></p>
+      </div>
+
+      <div class="section-label">Testable hypotheses</div>
+      <div class="card">
+        <h2>Testable hypotheses</h2>
+        <ol id="hypotheses"></ol>
+      </div>
+
+      <div class="section-label">Evidence base (ranked by predicted impact)</div>
+      <div class="card">
+        <h2>Ranked evidence</h2>
+        <p style="margin-bottom: 16px;">Papers ranked by citation impact (predicted or current), with education topic. Use this list to prioritize follow-up, replication, or partnership.</p>
+        <table>
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th>Paper</th>
+              <th>Year</th>
+              <th>Topic (education)</th>
+              <th class="num">Impact</th>
+            </tr>
+          </thead>
+          <tbody id="predictions"></tbody>
+        </table>
+        <p id="source-note" class="source-note"></p>
+      </div>
+
+      <div class="section-label">Also in this stack</div>
+      <div class="card">
+        <h2>AI Education Research Assistant</h2>
+        <p>Run deep literature reviews on AI in education with the <a href="https://github.com/alym00sa-dev/ai-in-education-research-agent" target="_blank" rel="noopener">AI-in-Education Research Agent</a>: Open Deep Research (LangGraph) + Neo4j knowledge graph + evidence mapping. Use it for comprehensive queries and problem-burden analysis.</p>
+        <p style="margin-bottom:0;"><strong>To run:</strong> Clone the repo, start LangGraph and Neo4j, then <code>streamlit run app.py</code> → <a href="http://localhost:8501" target="_blank" rel="noopener">http://localhost:8501</a>. For a single entry point to both tools, open <a href="/hub">/hub</a> on this server.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (async function() {
+      const loading = document.getElementById('loading');
+      const error = document.getElementById('error');
+      const content = document.getElementById('content');
+      try {
+        const res = await fetch('/api/insights');
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        const data = await res.json();
+        loading.style.display = 'none';
+        content.style.display = 'block';
+
+        document.getElementById('synthesis').textContent = data.synthesis || '—';
+
+        const hypEl = document.getElementById('hypotheses');
+        hypEl.innerHTML = '';
+        (data.hypotheses || []).forEach(function(h) {
+          const li = document.createElement('li');
+          li.textContent = h;
+          hypEl.appendChild(li);
+        });
+
+        const tbody = document.getElementById('predictions');
+        (data.predictions || []).forEach(function(p) {
+          const tr = document.createElement('tr');
+          const topicClass = p.topic && p.topic.includes('Policy') ? 'topic-0' : p.topic && p.topic.includes('Learning') ? 'topic-1' : 'topic-2';
+          tr.innerHTML =
+            '<td class="num">' + (p.rank || '') + '</td>' +
+            '<td>' + (p.title || 'Paper ' + p.paper_id) + '</td>' +
+            '<td>' + (p.year || '') + '</td>' +
+            '<td><span class="topic-tag ' + topicClass + '">' + (p.topic || '—') + '</span></td>' +
+            '<td class="num score">' + (p.score ?? '') + '</td>';
+          tbody.appendChild(tr);
+        });
+
+        if (data.source) {
+          document.getElementById('source-note').textContent = 'Source: ' + data.source;
+        }
+      } catch (e) {
+        loading.style.display = 'none';
+        error.style.display = 'block';
+        error.textContent = 'Could not load insights. Start the API: python -m uvicorn api.main:app --port 8000 (from the community_citation_model folder).';
+      }
+    })();
+  </script>
+</body>
+</html>

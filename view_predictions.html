@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCM Predictions – View</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #eee; padding: 24px; max-width: 720px; margin: 0 auto; }
+    h1 { font-size: 1.4rem; margin-bottom: 8px; }
+    .sub { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
+    button { background: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; margin-bottom: 20px; }
+    button:hover { background: #1d4ed8; }
+    .reply { background: #16213e; border: 1px solid #2a2a32; border-radius: 12px; padding: 16px; margin-bottom: 24px; line-height: 1.5; }
+    .section { font-size: 0.75rem; color: #7c9cff; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; background: #16213e; border-radius: 12px; overflow: hidden; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #2a2a32; }
+    th { background: #0f172a; color: #94a3b8; font-weight: 600; font-size: 0.8rem; }
+    tr:last-child td { border-bottom: none; }
+    .score { font-weight: 700; color: #7c9cff; }
+    .err { color: #f87171; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Literature predictions (CCM)</h1>
+  <p class="sub">Check how prediction works and topics in education. API: http://127.0.0.1:8000</p>
+
+  <div class="section">How the prediction works</div>
+  <div id="how" class="reply">
+    <p><strong>Summary:</strong> Papers are ranked by predicted (or current) citation count.</p>
+    <ol style="margin: 8px 0 0 18px; line-height: 1.6;">
+      <li><strong>Data:</strong> Citation network (who cites whom) + paper year and topic (group).</li>
+      <li><strong>LTCM (when installed):</strong> Fit a Long-Term Citation Model on training years; predict future citations per paper; rank by predicted count.</li>
+      <li><strong>Fallback:</strong> If LTCM is not available, rank by current in-degree (citations received so far).</li>
+      <li><strong>Output:</strong> List of papers ordered by impact, with education topic labels.</li>
+    </ol>
+    <p style="margin-top: 12px; color: #94a3b8; font-size: 0.9rem;">Reference: Wang, Song & Barabási, <em>Science</em> 2013 (Long-Term Citation Model).</p>
+  </div>
+
+  <div class="section" style="margin-top: 24px;">Topics in education (demo groups)</div>
+  <table style="margin-bottom: 24px;">
+    <thead><tr><th>Group</th><th>Topic</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>Education Policy & Systems</td><td>Systems, policy, and governance in education.</td></tr>
+      <tr><td>1</td><td>Learning Sciences & Instruction</td><td>How people learn and how instruction is designed.</td></tr>
+      <tr><td>2</td><td>Assessment & Evaluation</td><td>Measuring learning outcomes and evaluating programs.</td></tr>
+    </tbody>
+  </table>
+
+  <button type="button" id="btn">Load predictions</button>
+  <div id="reply" class="reply" style="display:none;"></div>
+  <div class="section" id="sectionLabel" style="display:none;">Predicted papers (by topic)</div>
+  <table id="table" style="display:none;">
+    <thead><tr><th>#</th><th>Paper</th><th>Year</th><th>Topic (education)</th><th>Score (citations)</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="err" class="err"></div>
+
+  <script>
+    document.getElementById('btn').onclick = async () => {
+      const errEl = document.getElementById('err');
+      const replyEl = document.getElementById('reply');
+      const sectionLabel = document.getElementById('sectionLabel');
+      const table = document.getElementById('table');
+      const tbody = document.getElementById('tbody');
+      errEl.textContent = '';
+      replyEl.style.display = 'none';
+      table.style.display = 'none';
+      sectionLabel.style.display = 'none';
+      tbody.innerHTML = '';
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'predict citations', history: [] })
+        });
+        if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+        const data = await res.json();
+        replyEl.textContent = data.reply || '';
+        replyEl.style.display = 'block';
+        const preds = data.predictions || [];
+        if (preds.length > 0) {
+          sectionLabel.style.display = 'block';
+          table.style.display = 'table';
+          preds.forEach((p, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + (i + 1) + '</td><td>' + (p.title || p.paper_id || '—') + '</td><td>' + (p.year || '') + '</td><td>' + (p.topic || '—') + '</td><td class="score">' + (p.score ?? '') + '</td>';
+            tbody.appendChild(tr);
+          });
+        } else {
+          errEl.textContent = 'No predictions in response.';
+        }
+      } catch (e) {
+        errEl.textContent = 'Error: ' + e.message + '. Is the API running? Start it with: python -m uvicorn api.main:app --port 8000';
+      }
+    };
+  </script>
+</body>
+</html>
